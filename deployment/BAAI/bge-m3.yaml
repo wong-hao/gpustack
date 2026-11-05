@@ -1,0 +1,31 @@
+# Exported from GPUStack v2.3.0 at 2026-11-05T01:19:37Z
+name: bge-m3
+cluster_name: 8L20
+source: local_path
+local_path: /home/huggingface/hf_model/BAAI/bge-m3
+replicas: 1
+categories:
+- embedding
+placement_strategy: spread
+distributed_inference_across_workers: true
+gpu_selector:
+  gpu_ids:
+  - localhost.localdomain:cuda:0
+backend: vLLM
+image_name: vllm/vllm-openai:latest
+run_command: '{{model_path}} --runner pooling --hf-overrides ''{"architectures": ["BgeM3EmbeddingModel"]}''
+  --pooler-config.task embed --trust-remote-code --max-model-len 8192 --gpu-memory-utilization
+  0.3 --served-model-name bge-m3'
+native_anthropic_api: false
+env:
+  HF_HOME: /home/huggingface/hf_cache
+restart_on_error: true
+distributable: false
+extended_kv_cache:
+  enabled: false
+  mode: local
+  ram_ratio: 1.2
+speculative_config:
+  enabled: false
+generic_proxy: false
+enable_model_route: false

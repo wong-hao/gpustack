@@ -1,0 +1,31 @@
+# Exported from GPUStack v2.3.0 at 2026-11-05T01:19:31Z
+name: qwen3-vl-embedding-2b
+cluster_name: 8L20
+source: local_path
+local_path: /home/huggingface/hf_model/Qwen/Qwen3-VL-Embedding-2B
+replicas: 1
+categories:
+- embedding
+placement_strategy: spread
+distributed_inference_across_workers: false
+gpu_selector:
+  gpu_ids:
+  - localhost.localdomain:cuda:1
+  gpus_per_replica: 1
+backend: vLLM
+image_name: vllm/vllm-openai:latest
+run_command: '{{model_path}} --runner pooling --trust-remote-code --max-model-len
+  8192 --gpu-memory-utilization 0.3 --served-model-name qwen3-vl-embedding-2b'
+native_anthropic_api: false
+env:
+  HF_HOME: /home/huggingface/hf_cache
+restart_on_error: true
+distributable: false
+extended_kv_cache:
+  enabled: false
+  mode: local
+  ram_ratio: 1.2
+speculative_config:
+  enabled: false
+generic_proxy: false
+enable_model_route: false

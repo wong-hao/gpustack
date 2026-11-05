@@ -1,0 +1,24 @@
+services:
+  gpustack-worker:
+    image: ${IMAGE_REGISTRY:-docker.io}/${IMAGE_NAMESPACE:-gpustack}/gpustack:${GPUSTACK_TAG:-latest}
+    container_name: gpustack-worker
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    runtime: nvidia
+    environment:
+      - GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=gpustack-worker
+      - GPUSTACK_TOKEN=gpustack_7a6f24c425a096b6_3b95e0b795b605813581964aa9db0772
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - gpustack-data:/var/lib/gpustack
+      # 存放在线下载的模型
+      - /home/gpustack/gpustack_model:/var/lib/gpustack/cache
+      # 映射你已有的本地模型目录
+      - /home/huggingface/hf_model:/home/huggingface/hf_model
+    command: >
+      --server-url http://202.115.132.37:8888
+      --worker-ip 202.115.138.34
+
+volumes:
+  gpustack-data:

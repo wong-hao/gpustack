@@ -1,0 +1,26 @@
+# Exported from GPUStack v2.3.0 at 2026-11-05T01:19:35Z
+name: bge-reranker-v2-m3
+cluster_name: 8L20
+source: local_path
+local_path: /home/huggingface/hf_model/BAAI/bge-reranker-v2-m3
+replicas: 1
+categories:
+- reranker
+placement_strategy: spread
+distributed_inference_across_workers: false
+worker_selector: {}
+gpu_selector:
+  gpu_ids:
+  - localhost.localdomain:cuda:2
+  gpus_per_replica: 1
+backend: vLLM
+image_name: vllm/vllm-openai:latest
+run_command: '{{model_path}} --runner pooling --trust-remote-code --max-model-len
+  8192 --gpu-memory-utilization 0.3 --served-model-name bge-reranker-v2-m3'
+native_anthropic_api: false
+env:
+  HF_HOME: /home/huggingface/hf_cache
+restart_on_error: true
+distributable: false
+generic_proxy: false
+enable_model_route: false
