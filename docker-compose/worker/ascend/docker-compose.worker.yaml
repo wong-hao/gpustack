@@ -1,0 +1,27 @@
+services:
+  gpustack-worker:
+    image: quay.io/gpustack/gpustack:latest
+    container_name: gpustack-worker
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    runtime: ascend
+    environment:
+      GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME: gpustack-worker
+      GPUSTACK_TOKEN: gpustack_586bca2d08d57300_57b4768f6197dfa4fa58afd23e6cc794
+      # 挂载 0~7 共 8 张昇腾 NPU 卡
+      ASCEND_VISIBLE_DEVICES: "0,1,2,3,4,5,6,7"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - gpustack-data:/var/lib/gpustack
+      - /data:/data
+      - /data/gpustack/gpustack_model:/var/lib/gpustack/cache
+      - /usr/local/Ascend/driver:/usr/local/Ascend/driver:ro
+    command:
+      - --server-url
+      - http://202.115.132.37:8888
+      - --worker-ip
+      - 202.115.138.84
+
+volumes:
+  gpustack-data:
