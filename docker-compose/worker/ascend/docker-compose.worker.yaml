@@ -9,6 +9,7 @@ services:
     environment:
       GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME: gpustack-worker
       GPUSTACK_TOKEN: gpustack_586bca2d08d57300_57b4768f6197dfa4fa58afd23e6cc794
+      GPUSTACK_MODEL_RUNTIME_SHM_SIZE_GIB: 500 # --shm-size
       # 挂载 0~7 共 8 张昇腾 NPU 卡
       ASCEND_VISIBLE_DEVICES: "0,1,2,3,4,5,6,7"
     volumes:
