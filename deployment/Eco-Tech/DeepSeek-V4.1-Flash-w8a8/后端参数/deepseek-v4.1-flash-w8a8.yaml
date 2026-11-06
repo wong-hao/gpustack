@@ -1,0 +1,155 @@
+# Exported from GPUStack v2.3.0 at 2026-11-06T07:28:08Z
+name: deepseek-v4.1-flash-w8a8
+cluster_name: 8910B
+source: local_path
+local_path: /data/DeepSeek-V4.1-Flash-w8a8
+replicas: 1
+categories:
+- llm
+placement_strategy: spread
+distributed_inference_across_workers: true
+worker_selector: {}
+backend: vLLM
+image_name: quay.io/ascend/vllm-ascend:v0.30.0-openeuler-with-router
+native_anthropic_api: false
+restart_on_error: false
+distributable: false
+extended_kv_cache:
+  enabled: false
+  mode: local
+  ram_ratio: 1.2
+speculative_config:
+  enabled: false
+generic_proxy: false
+lora_list: []
+roles:
+- name: prefill
+  replicas: 1
+  backend_parameters:
+  - --data-parallel-size=4
+  - --tensor-parallel-size=4
+  - --max-model-len=1048576
+  - --enable-expert-parallel
+  - --seed=1024
+  - --max-num-batched-tokens=8192
+  - --max-num-seqs=16
+  - --block-size=128
+  - --trust-remote-code
+  - --tokenizer-mode=deepseek_v41
+  - --reasoning-parser=deepseek_v41
+  - --tool-call-parser=deepseek_v41
+  - --enable-auto-tool-choice
+  - --safetensors-load-strategy=lazy
+  - --quantization=ascend
+  - --engram-config '{"cpu_offload":true,"dp_shared_memory":true}'
+  - --enforce-eager
+  - --additional-config '{"enable_cpu_binding":true,"enable_dsa_cp":true,"enable_flashcomm1":true,"enable_shared_expert_dp":true}'
+  - --enable-prefix-caching
+  - --gpu-memory-utilization=0.9
+  - --speculative-config '{"num_speculative_tokens":5,"method":"dspark"}'
+  - --kv-transfer-config '{"kv_connector":"MultiConnector","kv_role":"kv_producer","kv_port":"30000","engine_id":"0","kv_connector_extra_config":{"connectors":[{"kv_connector":"MooncakeHybridConnector","kv_role":"kv_producer","kv_port":"30000","kv_connector_extra_config":{"prefill":{"dp_size":4,"tp_size":4},"decode":{"dp_size":8,"tp_size":2}}},{"kv_connector":"AscendStoreConnector","kv_role":"kv_producer","kv_connector_extra_config":{"lookup_rpc_port":"0","backend":"mooncake","use_layerwise":false}}]}}'
+  env:
+    VLLM_ENGINE_READY_TIMEOUT_S: '360000'
+    VLLM_USE_V2_MODEL_RUNNER: '0'
+    HCCL_INTRA_ROCE_ENABLE: '1'
+    HCCL_CONNECT_TIMEOUT: '1200'
+    HCCL_BUFFSIZE: '1024'
+    TASK_QUEUE_ENABLE: '1'
+    VLLM_RPC_TIMEOUT: '3600000'
+    VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS: '30000'
+    HCCL_EXEC_TIMEOUT: '204'
+    GPUSTACK_MODEL_RUNTIME_SHM_SIZE_GIB: '500'
+    PYTHONHASHSEED: '0'
+  gpu_selector:
+    gpu_ids:
+    - work01:cann:0
+    - work01:cann:1
+    - work01:cann:2
+    - work01:cann:3
+    - work01:cann:4
+    - work01:cann:5
+    - work01:cann:6
+    - work01:cann:7
+    - manag01:cann:0
+    - manag01:cann:1
+    - manag01:cann:2
+    - manag01:cann:3
+    - manag01:cann:4
+    - manag01:cann:5
+    - manag01:cann:6
+    - manag01:cann:7
+  extended_kv_cache:
+    enabled: false
+    mode: local
+    ram_ratio: 1.2
+- name: decode
+  replicas: 1
+  backend_parameters:
+  - --data-parallel-size=8
+  - --tensor-parallel-size=2
+  - --max-model-len=1048576
+  - --enable-expert-parallel
+  - --seed=1024
+  - --max-num-batched-tokens=400
+  - --max-num-seqs=32
+  - --async-scheduling
+  - --block-size=128
+  - --trust-remote-code
+  - --tokenizer-mode=deepseek_v41
+  - --reasoning-parser=deepseek_v41
+  - --tool-call-parser=deepseek_v41
+  - --enable-auto-tool-choice
+  - --safetensors-load-strategy=lazy
+  - --quantization=ascend
+  - --engram-config '{"cpu_offload":true,"dp_shared_memory":true}'
+  - --additional-config '{"ascend_compilation_config":{"enable_npugraph_ex":true,"enable_static_kernel":false},"enable_cpu_binding":true,"multistream_overlap_shared_expert":true,"recompute_scheduler_enable":true}'
+  - --compilation-config '{"cudagraph_mode":"FULL_DECODE_ONLY"}'
+  - --no-enable-prefix-caching
+  - --gpu-memory-utilization=0.95
+  - --speculative-config '{"num_speculative_tokens":5,"method":"dspark","enforce_eager":true}'
+  - --kv-transfer-config '{"kv_connector":"MultiConnector","kv_role":"kv_consumer","kv_port":"30100","engine_id":"1","kv_connector_extra_config":{"connectors":[{"kv_connector":"MooncakeHybridConnector","kv_role":"kv_consumer","kv_port":"30100","kv_connector_extra_config":{"prefill":{"dp_size":4,"tp_size":4},"decode":{"dp_size":8,"tp_size":2}}},{"kv_connector":"AscendStoreConnector","kv_role":"kv_consumer","kv_connector_extra_config":{"lookup_rpc_port":"0","backend":"mooncake","use_layerwise":false}}]}}'
+  env:
+    VLLM_ENGINE_READY_TIMEOUT_S: '360000'
+    VLLM_USE_V2_MODEL_RUNNER: '0'
+    HCCL_INTRA_ROCE_ENABLE: '1'
+    HCCL_CONNECT_TIMEOUT: '1200'
+    HCCL_BUFFSIZE: '1800'
+    VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS: '30000'
+    HCCL_EXEC_TIMEOUT: '204'
+    GPUSTACK_MODEL_RUNTIME_SHM_SIZE_GIB: '500'
+    PYTHONHASHSEED: '0'
+  gpu_selector:
+    gpu_ids:
+    - work02:cann:0
+    - work02:cann:1
+    - work02:cann:2
+    - work02:cann:3
+    - work02:cann:4
+    - work02:cann:5
+    - work02:cann:6
+    - work02:cann:7
+    - work03:cann:0
+    - work03:cann:1
+    - work03:cann:2
+    - work03:cann:3
+    - work03:cann:4
+    - work03:cann:5
+    - work03:cann:6
+    - work03:cann:7
+  extended_kv_cache:
+    enabled: false
+    mode: local
+    ram_ratio: 1.2
+- name: router
+  replicas: 1
+  extended_kv_cache:
+    enabled: false
+    mode: local
+    ram_ratio: 1.2
+disaggregation:
+  mode: vllm-ascend-mooncake
+  vendor: ascend
+  readiness: any_per_role
+  kv_load_failure_policy: fail
+gather: {}
+enable_model_route: true
