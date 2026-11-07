@@ -47,6 +47,7 @@ roles:
   - --enable-prefix-caching
   - --gpu-memory-utilization=0.9
   - --speculative-config '{"num_speculative_tokens":5,"method":"dspark"}'
+  - --enable_prompt_tokens_details
   - --kv-transfer-config '{"kv_connector":"MultiConnector","kv_role":"kv_producer","kv_port":"30000","engine_id":"0","kv_connector_extra_config":{"connectors":[{"kv_connector":"MooncakeHybridConnector","kv_role":"kv_producer","kv_port":"30000","kv_connector_extra_config":{"prefill":{"dp_size":4,"tp_size":4},"decode":{"dp_size":8,"tp_size":2}}},{"kv_connector":"AscendStoreConnector","kv_role":"kv_producer","kv_connector_extra_config":{"lookup_rpc_port":"0","backend":"mooncake","use_layerwise":false}}]}}'
   env:
     VLLM_ENGINE_READY_TIMEOUT_S: '360000'
